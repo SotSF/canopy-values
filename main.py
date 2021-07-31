@@ -47,9 +47,6 @@ def getValue(name):
     return jsonify(v.json())
 
 @app.route("/")
-def index():
-    return valuesIndex()
-
 @app.route("/values")
 def valuesIndex():
     return render_template("values/index.html")
@@ -68,4 +65,4 @@ if __name__ == '__main__':
     if args.public:
         host = '0.0.0.0'
         debug=False
-    app.run(host=host, debug=False)
+    app.run(host=host, debug=True)

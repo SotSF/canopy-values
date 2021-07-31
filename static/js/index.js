@@ -2,7 +2,10 @@ cube = {rotation: {x: 0, y: 0, z: 0}}
 camera = {position: {z: 0}}
 
 var values = {};
-const gui = new dat.GUI();
+const gui = new dat.GUI({autoPlace: false});
+gui.domElement.id = 'gui'
+document.getElementById('main').appendChild(gui.domElement)
+
 const folder = gui.addFolder('values')
 folder.open()
 
