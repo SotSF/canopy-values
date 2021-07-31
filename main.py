@@ -15,14 +15,13 @@ class Value(db.Model):
         return {"name": self.name, "value": self.value}
 
 @app.route("/api/values", methods=["GET"])
-def integers():
+def listValues():
     a = Value.query.all()
     print(a)
-    return jsonify([v.json() for v in a])
+    return jsonify({"values": [v.json() for v in a]})
 
 @app.route("/api/values", methods=["POST"])
-def writeInteger():
-    print("writeInteger called:", request.json)
+def writeValue():
     val = request.json
     i = Value(name=val['name'], value=val['value'])
     db.session.add(i)

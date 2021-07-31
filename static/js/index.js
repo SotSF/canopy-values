@@ -50,7 +50,7 @@ function getValues() {
     fetch('/api/values')
         .then(response => response.json())
         .then(function(vals) {
-            for (const val of vals) {
+            for (const val of vals.values) {
                 values[val.name] = val.value
                 controller = folder.add(values, val.name, 0, 100, 1)
                 controller.onChange(function(v) {
