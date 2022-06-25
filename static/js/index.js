@@ -9,17 +9,18 @@ document.getElementById("main").appendChild(gui.domElement);
 const folder = gui.addFolder("values");
 folder.open();
 
-function postValue(name, value) {
-  fetch(`/api/values`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      name: name,
-      value: value,
-    }),
-  }).then(function () {
+async function postValue(name, value) {
+  if (name) {
+    await fetch(`/api/values`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        value,
+      }),
+    });
     location.reload(true);
-  });
+  }
 }
 
 var addFieldValue = {
@@ -42,30 +43,28 @@ function updateValue(name, value) {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      name: name,
-      value: value,
+      name,
+      value,
     }),
   });
 }
 
-function getValues() {
-  fetch("/api/values")
-    .then((response) => response.json())
-    .then(function (vals) {
-      for (const val of vals.values) {
-        values[val.name] = val.value;
-        controller = folder.add(values, val.name, 0, 100, 1);
-        controller.onChange(function (v) {
-          updateValue(this.property, v);
-        });
-      }
+async function getValues() {
+  const response = await fetch("/api/values");
+  const data = await response.json();
+  for (const val of data.values) {
+    values[val.name] = val.value;
+    controller = folder.add(values, val.name, 0, 100, 1);
+    controller.onChange(function (v) {
+      updateValue(this.property, v);
     });
+  }
 }
 
-function getValue(name) {
-  fetch(`/api/values/${name}`)
-    .then((response) => response.json())
-    .then((val) => console.log(val));
+async function getValue(name) {
+  const response = await fetch(`/api/values/${name}`);
+  const data = await response.json();
+  console.log(data);
 }
 
 getValues();

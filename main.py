@@ -48,7 +48,11 @@ def getValue(name):
 
 @app.route("/")
 @app.route("/values")
-def valuesIndex():
+def valuesView():
+    return render_template("values/index.html")
+
+@app.route("/game")
+def gameView():
     return render_template("values/index.html")
 
 if __name__ == '__main__':
