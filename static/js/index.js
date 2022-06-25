@@ -14,10 +14,7 @@ async function postValue(name, value) {
     await fetch(`/api/values`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name,
-        value,
-      }),
+      body: JSON.stringify({ name, value }),
     });
     location.reload(true);
   }
@@ -26,9 +23,7 @@ async function postValue(name, value) {
 var addFieldValue = {
   name: "",
   value: 50,
-  butts: function (a) {
-    postValue(this.name, this.value);
-  },
+  butts: () => postValue(this.name, this.value),
   msg: "",
 };
 
@@ -42,10 +37,7 @@ function updateValue(name, value) {
   fetch(`/api/values/${name}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      name,
-      value,
-    }),
+    body: JSON.stringify({ name, value }),
   });
 }
 
@@ -55,9 +47,7 @@ async function getValues() {
   for (const val of data.values) {
     values[val.name] = val.value;
     controller = folder.add(values, val.name, 0, 100, 1);
-    controller.onChange(function (v) {
-      updateValue(this.property, v);
-    });
+    controller.onChange(() => updateValue(this.property, v));
   }
 }
 
