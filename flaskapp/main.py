@@ -53,7 +53,7 @@ def valuesView():
 
 @app.route("/game")
 def gameView():
-    return render_template("values/index.html")
+    return render_template("game/index.html")
 
 if __name__ == '__main__':
     # create the db if it doesn't exist
