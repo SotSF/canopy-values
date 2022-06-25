@@ -23,7 +23,9 @@ async function postValue(name, value) {
 var addFieldValue = {
   name: "",
   value: 50,
-  butts: () => postValue(this.name, this.value),
+  butts: function () {
+    postValue(this.name, this.value);
+  },
   msg: "",
 };
 
@@ -47,7 +49,7 @@ async function getValues() {
   for (const val of data.values) {
     values[val.name] = val.value;
     controller = folder.add(values, val.name, 0, 100, 1);
-    controller.onChange(() => updateValue(this.property, v));
+    controller.onChange((v) => updateValue(this.property, v));
   }
 }
 
