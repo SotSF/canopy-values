@@ -49,7 +49,9 @@ async function getValues() {
   for (const val of data.values) {
     values[val.name] = val.value;
     controller = folder.add(values, val.name, 0, 100, 1);
-    controller.onChange((v) => updateValue(this.property, v));
+    controller.onChange(function (v) {
+      updateValue(this.property, v);
+    });
   }
 }
 
