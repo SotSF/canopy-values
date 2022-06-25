@@ -4,7 +4,9 @@ Web app that interfaces with the Servants of the Secret Fire LED Canopy.
 
 ## Development
 
-A Create React App (CRA) Typescript app renders a React frontend, and proxies through any API requests to a Flask app. The Flask app uses a SQLite DB as a datastore. That canopy Unity app polls the Flask app for data.
+A Create React App (CRA) Typescript app renders a React frontend, and proxies through any API
+requests to a Flask app. The Flask app uses a SQLite DB as a datastore. The canopy Unity app polls
+the Flask app for data.
 
 ### Setup
 
