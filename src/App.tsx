@@ -28,6 +28,18 @@ const updateValue = async (name: string, value: number) => {
 const updateValueDelta = (name: string, delta: number) =>
   updateValue(name, dataStore[name] + delta);
 
+const fireEvent = async () => {
+  await fetch("/api/events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      event: "player_update",
+      color: "#ffffff",
+      data: { x: dataStore.x, y: dataStore.y },
+    }),
+  });
+};
+
 function App() {
   const [x, setX] = useState(50);
   const [y, setY] = useState(50);
@@ -65,6 +77,13 @@ function App() {
           }}
         >
           Down
+        </button>
+        <button
+          onClick={() => {
+            fireEvent();
+          }}
+        >
+          Fire update event
         </button>
       </header>
     </div>
