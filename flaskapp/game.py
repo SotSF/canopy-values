@@ -14,4 +14,10 @@ def setup_game_routes(app):
     def new_event():
         event = request.json
         events.append(event)
+
+        # drain the queue if it is getting too big
+        # can make this larger later, keeping it small for debugging
+        if len(events) > 5:
+            events.pop(0)
+
         return jsonify(event)
