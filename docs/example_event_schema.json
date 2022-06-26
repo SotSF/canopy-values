@@ -1,23 +1,28 @@
-{
-    "event": "player_connect",
-    "player": "0xff1122"
-}
+[
+    {
+        "evt": "connect",
+        "player": "0xff1122",
+        "data":{}
+    },
 
-{
-    "event": "player_update",
-    "player": "0xff1122",
-    "data":{
-        "dx": 1.5,
-        "dy": 0
+    {
+        "evt": "update",
+        "player": "0xff1122",
+        "data":{
+            "dx": 1.5,
+            "dy": 0
+        }
+    },
+
+    {
+        "evt": "fire",
+        "player": "0xff1122",
+        "data": {}
+    },
+
+    {
+        "evt": "disconnect",
+        "player": "0xff1122",
+        "data": {}
     }
-}
-
-{
-    "event": "player_fire",
-    "player": "0xff1122",
-}
-
-{
-    "event": "player_disconnect",
-    "color": "0xff1122"
-}
+]
