@@ -1,4 +1,4 @@
-# Canopy Values
+# Secret Fire Canopy
 
 Web app that interfaces with the Servants of the Secret Fire LED Canopy.
 
