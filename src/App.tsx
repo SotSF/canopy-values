@@ -1,90 +1,30 @@
 import { useEffect, useState } from "react";
+import { fireEvent } from "./events";
 import "./App.css";
 
-type KeyValue = {
-  name: string;
-  value: number;
-};
-
-let dataStore: Record<string, number> = {};
-const fetchValues = async () => {
-  const response = await fetch("/api/values");
-  const values = (await response.json()).values as KeyValue[];
-  for (const { name, value } of values) {
-    dataStore[name] = value;
+declare global {
+  interface Window {
+    JoyStick: any;
   }
-  return dataStore;
-};
+}
 
-const updateValue = async (name: string, value: number) => {
-  dataStore[name] = value;
-  await fetch(`/api/values/${name}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, value }),
-  });
-};
+let joy;
+if (!document.getElementById("joystick")) {
+  joy = new window.JoyStick("joy", {}, () => console.log("testing"));
+}
 
-const updateValueDelta = (name: string, delta: number) =>
-  updateValue(name, dataStore[name] + delta);
-
-const fireEvent = async () => {
-  await fetch("/api/events", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      event: "player_update",
-      color: "#ffffff",
-      data: { x: dataStore.x, y: dataStore.y },
-    }),
-  });
-};
+setInterval(() => {
+  // TODO
+}, 1000 / 30);
 
 function App() {
-  const [x, setX] = useState(50);
-  const [y, setY] = useState(50);
-
-  // Initialize x, y state with true values
-  const initializeData = async () => {
-    await fetchValues();
-    setX(dataStore.x);
-    setY(dataStore.y);
-  };
-  useEffect(() => {
-    initializeData();
-  }, []);
-
+  const [color, setColor] = useState("#ff0000");
+  const fireUpdate = async () =>
+    fireEvent({ evt: "update", player: color, data: {} });
   return (
     <div className="App">
       <header className="App-header">
-        <svg width="100%" height={500} viewBox={`0 0 100 100`}>
-          <g>
-            <circle r={5} cx={x} cy={y} fill="blue" />
-          </g>
-        </svg>
-        <button
-          onClick={() => {
-            setY(dataStore.y - 10);
-            updateValueDelta("y", -10);
-          }}
-        >
-          Up
-        </button>
-        <button
-          onClick={() => {
-            setY(dataStore.y + 10);
-            updateValueDelta("y", 10);
-          }}
-        >
-          Down
-        </button>
-        <button
-          onClick={() => {
-            fireEvent();
-          }}
-        >
-          Fire update event
-        </button>
+        <button onClick={() => fireUpdate()}>Fire update event</button>
       </header>
     </div>
   );
