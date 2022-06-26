@@ -5,6 +5,7 @@ events = []
 def setup_game_routes(app):
     @app.route("/api/events")
     def get_events():
+        global events
         events_json = jsonify(events)
         events = []
         return events_json
