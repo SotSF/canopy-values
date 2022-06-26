@@ -1,13 +1,13 @@
 [
     {
         "evt": "connect",
-        "player": "0xff1122",
+        "player": "ff1122",
         "data":{}
     },
 
     {
         "evt": "update",
-        "player": "0xff1122",
+        "player": "ff1122",
         "data":{
             "dx": 1.5,
             "dy": 0
@@ -16,13 +16,13 @@
 
     {
         "evt": "fire",
-        "player": "0xff1122",
+        "player": "ff1122",
         "data": {}
     },
 
     {
         "evt": "disconnect",
-        "player": "0xff1122",
+        "player": "ff1122",
         "data": {}
     }
 ]
