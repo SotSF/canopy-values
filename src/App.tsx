@@ -13,6 +13,7 @@ const colorScale = chroma
   .mode("hcl")
   .colors(numberOfColors);
 
+const intervalMilliseconds = 1000;
 let interval: NodeJS.Timer | undefined = undefined;
 
 function App() {
@@ -34,7 +35,7 @@ function App() {
           player: color,
           data: { dx: joy.GetX(), dy: joy.GetY() },
         }),
-      1000,
+      intervalMilliseconds,
     );
   }, [color]);
 
