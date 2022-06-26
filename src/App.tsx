@@ -1,36 +1,17 @@
 import chroma from "chroma-js";
 import { useEffect, useState } from "react";
 import { fireEvent } from "./events";
+import { joy, redrawJoy } from "./joystick";
 import "./App.css";
 
 const defaultColor = "#efee69";
+redrawJoy(defaultColor);
+
 const numberOfColors = 8;
 const colorScale = chroma
   .scale(["red", "efee69", "green", "blue", "purple"])
   .mode("hcl")
   .colors(numberOfColors);
-
-declare global {
-  interface Window {
-    JoyStick: any;
-  }
-}
-
-interface Joy {
-  GetX(): number;
-  GetY(): number;
-}
-
-let joy: Joy;
-const redrawJoy = (color: string) => {
-  document.getElementById("joystick")?.remove();
-  joy = new window.JoyStick("joy", {
-    internalFillColor: color,
-    internalStrokeColor: color,
-    externalStrokeColor: color,
-  });
-};
-redrawJoy(defaultColor);
 
 let interval: NodeJS.Timer | undefined = undefined;
 
