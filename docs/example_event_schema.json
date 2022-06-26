@@ -1,6 +1,6 @@
 {
     "event": "player_connect",
-    "color": "0xff1122"
+    "player": "0xff1122"
 }
 
 {
