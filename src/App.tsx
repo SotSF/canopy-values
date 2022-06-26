@@ -1,6 +1,14 @@
+import chroma from "chroma-js";
 import { useEffect, useState } from "react";
 import { fireEvent } from "./events";
 import "./App.css";
+
+const defaultColor = "#efee69";
+const numberOfColors = 8;
+const colorScale = chroma
+  .scale(["red", "efee69", "green", "blue", "purple"])
+  .mode("hcl")
+  .colors(numberOfColors);
 
 declare global {
   interface Window {
@@ -13,36 +21,68 @@ interface Joy {
   GetY(): number;
 }
 
-let joy: Joy | undefined = undefined;
-if (!document.getElementById("joystick")) {
-  joy = new window.JoyStick("joy");
-}
-
-const fireUpdate = async (color: string) =>
-  fireEvent({
-    evt: "update",
-    player: color,
-    data: { dx: joy?.GetX(), dy: joy?.GetY() },
+let joy: Joy;
+const redrawJoy = (color: string) => {
+  document.getElementById("joystick")?.remove();
+  joy = new window.JoyStick("joy", {
+    internalFillColor: color,
+    internalStrokeColor: color,
+    externalStrokeColor: color,
   });
+};
+redrawJoy(defaultColor);
+
+let interval: NodeJS.Timer | undefined = undefined;
 
 function App() {
-  const [color] = useState("#ff0000");
+  const [color, setColor] = useState(defaultColor);
 
+  // on startup and any color change, send a connect event and regular update events
   useEffect(() => {
     fireEvent({
       evt: "connect",
       player: color,
       data: {},
     });
-    setInterval(() => {
-      fireUpdate(color);
-    }, 1000);
+
+    if (interval) clearInterval(interval);
+    interval = setInterval(
+      () =>
+        fireEvent({
+          evt: "update",
+          player: color,
+          data: { dx: joy.GetX(), dy: joy.GetY() },
+        }),
+      1000,
+    );
   }, [color]);
+
+  const changeColor = (newColor: string) => {
+    fireEvent({
+      evt: "disconnect",
+      player: color,
+      data: {},
+    });
+    redrawJoy(newColor);
+    setColor(newColor);
+  };
 
   return (
     <div className="App">
       <header className="App-header">
-        <button onClick={() => fireUpdate(color)}>Fire update event</button>
+        <div className="color-picker">
+          {colorScale.map((value, index) => (
+            <div
+              key={index}
+              className="color"
+              style={{
+                backgroundColor: value,
+                boxShadow: `0 0 15px 2px ${value}`,
+              }}
+              onClick={() => changeColor(value)}
+            />
+          ))}
+        </div>
       </header>
     </div>
   );

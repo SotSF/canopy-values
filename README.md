@@ -34,8 +34,8 @@ Flask/DatGUI frontend: http://localhost:5000/
 
 ## To do
 
-- allow picking a color
-- enforce color uniqueness
-- color joystick based on chosen color
+- enforce color uniqueness, on startup and on picking a new color
+- time out a player after a certain amount of time, which should free up their color
 - disconnect event on page close
+- new favicon
 - do stuff with gyroscope/accelerometer data
