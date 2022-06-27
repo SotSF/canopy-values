@@ -13,7 +13,7 @@ const colorScale = chroma
   .mode("hcl")
   .colors(numberOfColors);
 
-const intervalMilliseconds = 1000;
+const intervalMilliseconds = 90;
 let interval: NodeJS.Timer | undefined = undefined;
 
 function App() {
@@ -21,20 +21,25 @@ function App() {
   const [colorBytes, setColorBytes] = useState(Uint8Array.from([0xEF, 0xEE, 0x69]));
   const socket = new WebSocket("ws://127.0.0.1:9431");
   socket.binaryType = "arraybuffer";
-  
+
   // on startup and any color change, send a connect event and regular update events
   useEffect(() => {
 
     if (interval) clearInterval(interval);
     interval = setInterval(
       () => {
-        let evt = {
-          evt: EventType.Update,
-          player: colorBytes,
-          data: { dx: joy.GetX(), dy: joy.GetY() },
+        const x = joy.GetX();
+        const y = joy.GetY();
+        if (x > 0.00000001 || x < -0.00000001 || 
+            y > 0.00000001 || y < -0.00000001 ){
+          let evt = {
+            evt: EventType.Update,
+            player: colorBytes,
+            data: { dx: x, dy: y },
+          }
+          // fireEvent(evt);
+          websocketEvent(socket, evt);
         }
-        fireEvent(evt);
-        websocketEvent(socket, evt);
       },
       intervalMilliseconds,
     );
@@ -46,7 +51,7 @@ function App() {
       player: colorBytes,
       data: {},
     }
-    fireEvent(evt);
+    // fireEvent(evt);
     websocketEvent(socket, evt);
     redrawJoy(newColor);
     setColor(newColor);
