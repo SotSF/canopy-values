@@ -1,20 +1,30 @@
 import chroma from "chroma-js";
 import { useEffect, useState } from "react";
-import { fireEvent } from "./events";
+import { EventType, fireEvent, PlayerEvent } from "./events";
 import { joy, redrawJoy } from "./joystick";
+import { deepEqual } from "./util";
 import "./App.css";
 
 const defaultColor = "#efee69";
 redrawJoy(defaultColor);
 
-const numberOfColors = 8;
+const numberOfColors = 20;
 const colorScale = chroma
-  .scale(["red", "efee69", "green", "blue", "purple"])
+  .scale([
+    "#ff0000",
+    "#ffa500",
+    "#ffff00",
+    "#008000",
+    "#0000ff",
+    "#4b0082",
+    "#ee82ee",
+  ])
   .mode("hcl")
   .colors(numberOfColors);
 
 const intervalMilliseconds = 1000;
 let interval: NodeJS.Timer | undefined = undefined;
+let lastEvent: PlayerEvent = { evt: "connect", player: "", data: {} };
 
 function App() {
   const [color, setColor] = useState(defaultColor);
@@ -28,15 +38,19 @@ function App() {
     });
 
     if (interval) clearInterval(interval);
-    interval = setInterval(
-      () =>
-        fireEvent({
-          evt: "update",
-          player: color,
-          data: { dx: joy.GetX(), dy: joy.GetY() },
-        }),
-      intervalMilliseconds,
-    );
+    interval = setInterval(() => {
+      const newUpdateEvent = {
+        evt: "update" as EventType,
+        player: color,
+        data: { dx: joy.GetX(), dy: joy.GetY() },
+      };
+
+      // suppress noop events
+      if (deepEqual(newUpdateEvent, lastEvent)) return;
+
+      fireEvent(newUpdateEvent);
+      lastEvent = newUpdateEvent;
+    }, intervalMilliseconds);
   }, [color]);
 
   const changeColor = (newColor: string) => {

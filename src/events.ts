@@ -1,5 +1,7 @@
-interface PlayerEvent {
-  evt: "connect" | "update" | "fire" | "disconnect";
+export type EventType = "connect" | "update" | "fire" | "disconnect";
+
+export interface PlayerEvent {
+  evt: EventType;
   player: string;
   data: Record<string, any>;
 }
