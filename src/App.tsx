@@ -13,7 +13,7 @@ const colorScale = chroma
   .mode("hcl")
   .colors(numberOfColors);
 
-const intervalMilliseconds = 90;
+const intervalMilliseconds = 30;
 let interval: NodeJS.Timer | undefined = undefined;
 
 function App() {
