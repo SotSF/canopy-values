@@ -1,6 +1,6 @@
 import chroma from "chroma-js";
 import { useEffect, useState } from "react";
-import { fireEvent } from "./events";
+import { EventType, fireEvent, websocketEvent } from "./events";
 import { joy, redrawJoy } from "./joystick";
 import "./App.css";
 
@@ -18,35 +18,39 @@ let interval: NodeJS.Timer | undefined = undefined;
 
 function App() {
   const [color, setColor] = useState(defaultColor);
-
+  const [colorBytes, setColorBytes] = useState(Uint8Array.from([0xEF, 0xEE, 0x69]));
+  const socket = new WebSocket("ws://127.0.0.1:9431");
+  socket.binaryType = "arraybuffer";
+  
   // on startup and any color change, send a connect event and regular update events
   useEffect(() => {
-    fireEvent({
-      evt: "connect",
-      player: color,
-      data: {},
-    });
 
     if (interval) clearInterval(interval);
     interval = setInterval(
-      () =>
-        fireEvent({
-          evt: "update",
-          player: color,
+      () => {
+        let evt = {
+          evt: EventType.Update,
+          player: colorBytes,
           data: { dx: joy.GetX(), dy: joy.GetY() },
-        }),
+        }
+        fireEvent(evt);
+        websocketEvent(socket, evt);
+      },
       intervalMilliseconds,
     );
   }, [color]);
 
   const changeColor = (newColor: string) => {
-    fireEvent({
-      evt: "disconnect",
-      player: color,
+    let evt = {
+      evt: EventType.ChangeColor,
+      player: colorBytes,
       data: {},
-    });
+    }
+    fireEvent(evt);
+    websocketEvent(socket, evt);
     redrawJoy(newColor);
     setColor(newColor);
+    setColorBytes(Uint8Array.from(Buffer.from(newColor, 'hex')));
   };
 
   return (
