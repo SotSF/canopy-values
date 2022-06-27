@@ -18,15 +18,16 @@ fetch("/api/events", {
 });
 
 /* Binary format
-    00          < Event type
-    00 00 00    < Player hex color
-    00 00 00 00 < float data 0 (dx)
-    00 00 00 00 < float data 1 (dy)
+    0x01          < Event type
+    0x00 0x00 0x00    < Player hex color (unnecessary?)
+    0x00 0x00 0x00 0x00 < float data 0 (dx)
+    0x00 0x00 0x00 0x00 < float data 1 (dy)
 */
 export const websocketEvent = async(socket: WebSocket, event: PlayerEvent) =>
 {
   let byteBuffer = new Uint8Array(12);
   byteBuffer[0] = event.evt.valueOf();
+  // These 3 bytes probably not needed?
   byteBuffer[1] = event.player[0];
   byteBuffer[2] = event.player[1];
   byteBuffer[3] = event.player[2];
