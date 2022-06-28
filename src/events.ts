@@ -1,38 +1,60 @@
-export type EventType = "changeColor" | "update" | "fire";
-
-export interface PlayerEvent {
-  evt: EventType;
-  player: Uint8Array;
-  data: Record<string, any>;
+export const enum EventType {
+  Update = 1,
+  ChangeColor,
+  Fire,
 }
 
-export const fireEvent = async (event: PlayerEvent) =>
-  fetch("/api/events", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(event),
-  });
+export type PlayerEvent =
+  | {
+      event: EventType.Update;
+      dx: number;
+      dy: number;
+    }
+  | {
+      event: EventType.ChangeColor;
+      color: string;
+    }
+  | {
+      event: EventType.Fire;
+    };
 
-/* Binary format
-    0x01          < Event type
-    0x00 0x00 0x00    < Player hex color (unnecessary?)
+const websocket = new WebSocket("ws://127.0.0.1:9431");
+websocket.binaryType = "arraybuffer";
+
+/*
+  Binary format
+
+  EventType.Fire:
+    0x00                < Event type
+
+  EventType.ChangeColor:
+    0x00                < Event type
+    0x00 0x00 0x00      < Player hex color
+
+  EventType.Update:
+    0x00                < Event type
     0x00 0x00 0x00 0x00 < float data 0 (dx)
     0x00 0x00 0x00 0x00 < float data 1 (dy)
 */
-export const websocketEvent = async (socket: WebSocket, event: PlayerEvent) => {
-  let byteBuffer = new Uint8Array(12);
-  byteBuffer[0] = event.evt.valueOf();
-  // These 3 bytes probably not needed?
-  byteBuffer[1] = event.player[0];
-  byteBuffer[2] = event.player[1];
-  byteBuffer[3] = event.player[2];
-  if ("dx" in event.data) {
-    let floatData = new Uint8Array(
-      new Float32Array([event.data["dx"], event.data["dy"]]).buffer,
-    );
-    for (let i = 0; i < 8; i++) {
-      byteBuffer[i + 4] = floatData[i];
-    }
+export const sendEvent = async (playerEvent: PlayerEvent) => {
+  const byteBuffer = new Uint8Array(9);
+  byteBuffer[0] = playerEvent.event;
+
+  switch (playerEvent.event) {
+    case EventType.ChangeColor:
+      const colorBytes = Uint8Array.from(Buffer.from(playerEvent.color, "hex"));
+      byteBuffer[1] = colorBytes[0];
+      byteBuffer[2] = colorBytes[1];
+      byteBuffer[3] = colorBytes[2];
+      break;
+    case EventType.Update:
+      let floatData = new Uint8Array(
+        new Float32Array([playerEvent.dx, playerEvent.dy]).buffer,
+      );
+      for (let i = 0; i < 8; i++) {
+        byteBuffer[i + 1] = floatData[i];
+      }
   }
-  socket.send(byteBuffer.buffer);
+
+  websocket.send(byteBuffer.buffer);
 };

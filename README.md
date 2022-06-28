@@ -34,9 +34,8 @@ Flask/DatGUI frontend: http://localhost:5000/
 
 ## To do
 
-- enforce color uniqueness, on startup and on picking a new color
-- drop a player after a certain amount of time, which should free up their color
+- flask backend websocket server
+- add second joystick
 - animate color change
 - allow picking an arbitrary color
-- add violence for Kevin
 - do stuff with gyroscope/accelerometer data
