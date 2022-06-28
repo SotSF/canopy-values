@@ -12,6 +12,11 @@
   color: white;
 }
 
+.w-color-wheel {
+  box-shadow: 0 0 16px -5px gray;
+  border-radius: 50%;
+}
+
 .color-picker {
   margin-top: 3em;
   width: 100vw;

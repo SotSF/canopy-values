@@ -37,8 +37,8 @@ Visit: http://localhost:3000/
 ## To do
 
 - add second joystick
-- and buttons
-- animate color change
+- add buttons
+- animate color buttons
 - do stuff with gyroscope/accelerometer data
 
 ## Flask app
