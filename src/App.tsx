@@ -17,8 +17,8 @@ const colorScale = chroma
   ])
   .mode("hcl")
   .colors(numberOfColors);
-// TODO start with random color
-const defaultColor = "#efee69";
+
+const defaultColor = colorScale[Math.floor(Math.random() * colorScale.length)];
 redrawJoy(defaultColor);
 
 // Send update events with joystick position at a regular interval
