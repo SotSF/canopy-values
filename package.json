@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "canopy-values",
   "version": "0.1.0",
   "private": true,
   "proxy": "http://localhost:5000",
@@ -20,7 +20,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "BROWSER=none react-scripts start",
     "build": "react-scripts build",
     "eject": "react-scripts eject",
     "server": "python3 flaskapp/main.py"
