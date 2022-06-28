@@ -7,8 +7,10 @@ export const enum EventType {
 export type PlayerEvent =
   | {
       event: EventType.Update;
-      dx: number;
-      dy: number;
+      lx: number;
+      ly: number;
+      rx: number;
+      ry: number;
     }
   | {
       event: EventType.ChangeColor;
@@ -38,11 +40,13 @@ websocket.binaryType = "arraybuffer";
 
   EventType.Update:
     0x00                < Event type
-    0x00 0x00 0x00 0x00 < float data 0 (dx)
-    0x00 0x00 0x00 0x00 < float data 1 (dy)
+    0x00 0x00 0x00 0x00 < float data 0 (lx)
+    0x00 0x00 0x00 0x00 < float data 1 (ly)
+    0x00 0x00 0x00 0x00 < float data 2 (rx)
+    0x00 0x00 0x00 0x00 < float data 3 (ry)
 */
 export const sendEvent = async (playerEvent: PlayerEvent) => {
-  const byteBuffer = new Uint8Array(9);
+  const byteBuffer = new Uint8Array(17);
   byteBuffer[0] = playerEvent.event;
 
   switch (playerEvent.event) {
@@ -55,10 +59,11 @@ export const sendEvent = async (playerEvent: PlayerEvent) => {
       byteBuffer[3] = colorBytes[2];
       break;
     case EventType.Update:
+      const { lx, ly, rx, ry } = playerEvent;
       const floatData = new Uint8Array(
-        new Float32Array([playerEvent.dx, playerEvent.dy]).buffer,
+        new Float32Array([lx, ly, rx, ry]).buffer,
       );
-      for (let i = 0; i < 8; i++) {
+      for (let i = 0; i < 16; i++) {
         byteBuffer[i + 1] = floatData[i];
       }
   }

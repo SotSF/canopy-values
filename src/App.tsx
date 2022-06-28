@@ -2,7 +2,7 @@ import chroma from "chroma-js";
 import { useState } from "react";
 import Wheel from "@uiw/react-color-wheel";
 import { EventType, sendEvent } from "./events";
-import { joy, redrawJoy } from "./joystick";
+import { joyL, joyR, redrawJoys } from "./joystick";
 import { throttle } from "./util";
 import "./App.css";
 
@@ -23,23 +23,22 @@ const colorScale = chroma
   .colors(numberOfColors);
 
 const defaultColor = colorScale[Math.floor(Math.random() * colorScale.length)];
-redrawJoy(defaultColor);
+redrawJoys(defaultColor);
 
-// Send update events with joystick position at a regular interval
-const intervalMilliseconds = 30;
+// Send update events with joystick positions at a regular interval
+const intervalMilliseconds = 500;
 setInterval(() => {
-  const dx = joy.GetX();
-  const dy = joy.GetY();
-  if (
-    dx > 0.00000001 ||
-    dx < -0.00000001 ||
-    dy > 0.00000001 ||
-    dy < -0.00000001
-  )
+  const lx = joyL.GetX();
+  const ly = joyL.GetY();
+  const rx = joyR.GetX();
+  const ry = joyR.GetY();
+  if ([lx, ly, rx, ry].some((n) => n > 0.00001 || n < -0.00001))
     sendEvent({
       event: EventType.Update,
-      dx,
-      dy,
+      lx,
+      ly,
+      rx,
+      ry,
     });
 }, intervalMilliseconds);
 
@@ -52,7 +51,7 @@ function App() {
       event: EventType.ChangeColor,
       color,
     });
-    redrawJoy(newColor);
+    redrawJoys(newColor);
     setColor(newColor);
   };
 
@@ -77,6 +76,7 @@ function App() {
             <div
               key={index}
               className="color"
+              tabIndex={0}
               style={{
                 backgroundColor: value,
                 boxShadow: `0 0 15px 2px ${value}`,

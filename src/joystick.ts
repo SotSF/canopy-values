@@ -9,12 +9,23 @@ interface Joy {
   GetY(): number;
 }
 
-export let joy: Joy;
-export const redrawJoy = (color: string) => {
-  document.getElementById("joystick")?.remove();
-  joy = new window.JoyStick("joy", {
+export let joyL: Joy;
+export let joyR: Joy;
+export const redrawJoys = (color: string) => {
+  document.getElementById("joystickLCanvas")?.remove();
+  document.getElementById("joystickRCanvas")?.remove();
+
+  const defaultOptions = {
     internalFillColor: color,
     internalStrokeColor: color,
     externalStrokeColor: color,
+  };
+  joyL = new window.JoyStick("joystickL", {
+    title: "joystickLCanvas",
+    ...defaultOptions,
+  });
+  joyR = new window.JoyStick("joystickR", {
+    title: "joystickRCanvas",
+    ...defaultOptions,
   });
 };
