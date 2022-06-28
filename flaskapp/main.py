@@ -2,8 +2,6 @@ from flask import Flask, jsonify, request, abort, render_template
 from flask_sqlalchemy import SQLAlchemy
 import argparse
 
-from game import setup_game_routes
-
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///stuff.db'
 db = SQLAlchemy(app)
@@ -52,8 +50,6 @@ def getValue(name):
 @app.route("/values")
 def valuesView():
     return render_template("values/index.html")
-
-setup_game_routes(app)
 
 if __name__ == '__main__':
     # create the db if it doesn't exist
