@@ -36,10 +36,9 @@ Visit: http://localhost:3000/
 
 ## To do
 
-- flask backend websocket server
 - add second joystick
+- and buttons
 - animate color change
-- allow picking an arbitrary color
 - do stuff with gyroscope/accelerometer data
 
 ## Flask app
