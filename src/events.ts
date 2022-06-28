@@ -18,6 +18,11 @@ export type PlayerEvent =
       event: EventType.Fire;
     };
 
+const hexStringToIntArray = (hexString: string) =>
+  Uint8Array.from(
+    hexString.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)),
+  );
+
 const websocket = new WebSocket("ws://127.0.0.1:9431");
 websocket.binaryType = "arraybuffer";
 
@@ -42,13 +47,15 @@ export const sendEvent = async (playerEvent: PlayerEvent) => {
 
   switch (playerEvent.event) {
     case EventType.ChangeColor:
-      const colorBytes = Uint8Array.from(Buffer.from(playerEvent.color, "hex"));
+      const colorBytes = hexStringToIntArray(
+        playerEvent.color.replace("#", ""),
+      );
       byteBuffer[1] = colorBytes[0];
       byteBuffer[2] = colorBytes[1];
       byteBuffer[3] = colorBytes[2];
       break;
     case EventType.Update:
-      let floatData = new Uint8Array(
+      const floatData = new Uint8Array(
         new Float32Array([playerEvent.dx, playerEvent.dy]).buffer,
       );
       for (let i = 0; i < 8; i++) {
