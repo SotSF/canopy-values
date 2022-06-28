@@ -23,7 +23,7 @@
     "start": "BROWSER=none react-scripts start",
     "build": "react-scripts build",
     "eject": "react-scripts eject",
-    "server": "python3 flaskapp/main.py"
+    "websocket": "python3 websocketserver/websocket.py"
   },
   "eslintConfig": {
     "extends": [

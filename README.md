@@ -1,36 +1,38 @@
-# Secret Fire Canopy
+# Secret Fire Canopy JS Controller
 
 Web app that interfaces with the Servants of the Secret Fire LED Canopy.
 
+## Overview
+
+A Create React App (CRA) Typescript app renders a React frontend, which connects to the Unity app's
+websocket server and sends events (client -> server). A simple python websocket server can be used
+to log the output from the React app.
+
 ## Development
-
-A Create React App (CRA) Typescript app renders a React frontend, and proxies through any API
-requests to a Flask app. The Flask app uses a SQLite DB as a datastore. The canopy Unity app polls
-the Flask app for data.
-
-There is also a DatGUI frontend served by the flask app, which allows setting and changing values.
 
 ### Setup
 
 Ensure you have a recent version of Node (10 doesn't work, 16 does).
 
 Install Javascript dependencies:
+
 `npm install`
 
 Install Python dependencies:
-`cd flaskapp && pip3 install -r requirements.txt`
+
+`cd websocketserver && pip3 install -r requirements.txt`
 
 ### Run
 
 Run the React server:
+
 `npm start`
 
-Run the Flask server:
-`npm run server`
+Either run the canopy app, or run the python websocket server:
 
-React frontend: http://localhost:3000/
+`npm run websocket`
 
-Flask/DatGUI frontend: http://localhost:5000/
+Visit: http://localhost:3000/
 
 ## To do
 
@@ -39,3 +41,16 @@ Flask/DatGUI frontend: http://localhost:5000/
 - animate color change
 - allow picking an arbitrary color
 - do stuff with gyroscope/accelerometer data
+
+## Flask app
+
+There is also a DatGUI frontend served by a Flask app, which allows setting and changing values in a
+SQLite DB. The canopy Unity app polls the Flask app for data.
+
+```
+cd flaskapp
+pip3 install -r requirements.txt
+python3 main.py
+```
+
+Visit: http://localhost:5000/
