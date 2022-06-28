@@ -1,9 +1,9 @@
-.App {
-  text-align: center;
+#root {
+  width: 100vw;
 }
 
 .App-header {
-  height: 50vh;
+  height: 60vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -26,23 +26,29 @@
   border-radius: 1em;
 }
 
-#root {
-  width: 100vw;
-  height: 50vh;
-  background-color: #282c34;
-}
-
 .joystick-container {
   width: 100vw;
-  height: 50vh;
+  height: 40vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #282c34;
 }
 
 .joystick {
   width: 200px;
   height: 200px;
   margin: 20px;
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .App-header {
+    flex-direction: row;
+    height: 30vh;
+  }
+  .joystick-container {
+    height: 70vh;
+  }
+  .w-color-wheel {
+    display: none;
+  }
 }
