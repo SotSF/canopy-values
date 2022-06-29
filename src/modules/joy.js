@@ -170,18 +170,16 @@ export const JoyStick = function (container, parameters, callback) {
    */
   function drawInternal() {
     context.beginPath();
-    if (movedX < internalRadius) {
-      movedX = maxMoveStick;
+
+    const moveDistance = Math.sqrt(
+      (movedX - centerX) ** 2 + (movedY - centerY) ** 2,
+    );
+    if (moveDistance > maxMoveStick) {
+      const angle = Math.atan2(movedY - centerY, movedX - centerX);
+      movedX = Math.cos(angle) * internalRadius + centerX;
+      movedY = Math.sin(angle) * internalRadius + centerY;
     }
-    if (movedX + internalRadius > canvas.width) {
-      movedX = canvas.width - maxMoveStick;
-    }
-    if (movedY < internalRadius) {
-      movedY = maxMoveStick;
-    }
-    if (movedY + internalRadius > canvas.height) {
-      movedY = canvas.height - maxMoveStick;
-    }
+
     context.arc(movedX, movedY, internalRadius, 0, circumference, false);
     // create radial gradient
     var grd = context.createRadialGradient(

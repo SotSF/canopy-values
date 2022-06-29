@@ -37,7 +37,6 @@ Visit: http://localhost:3000/
 ## To do
 
 - add buttons
-- constrain joystick to circular input area
 - animate color buttons
 - do stuff with gyroscope/accelerometer data
 
