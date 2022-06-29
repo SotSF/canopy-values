@@ -1,9 +1,9 @@
 import chroma from "chroma-js";
 import { useState } from "react";
 import Wheel from "@uiw/react-color-wheel";
-import { EventType, sendEvent } from "./events";
-import { joyL, joyR, redrawJoys } from "./joystick";
-import { throttle } from "./util";
+import { EventType, sendEvent } from "./modules/events";
+import { joyL, joyR, redrawJoys } from "./modules/joystick";
+import { throttle } from "./modules/util";
 import "./App.css";
 
 type HSVA = { h: number; s: number; v: number; a: number };

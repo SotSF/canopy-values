@@ -1,8 +1,4 @@
-declare global {
-  interface Window {
-    JoyStick: any;
-  }
-}
+import { JoyStick } from "./joy";
 
 interface Joy {
   GetX(): number;
@@ -20,12 +16,20 @@ export const redrawJoys = (color: string) => {
     internalStrokeColor: color,
     externalStrokeColor: color,
   };
-  joyL = new window.JoyStick("joystickL", {
-    title: "joystickLCanvas",
-    ...defaultOptions,
-  });
-  joyR = new window.JoyStick("joystickR", {
-    title: "joystickRCanvas",
-    ...defaultOptions,
-  });
+  joyL = new JoyStick(
+    "joystickL",
+    {
+      title: "joystickLCanvas",
+      ...defaultOptions,
+    },
+    null!,
+  );
+  joyR = new JoyStick(
+    "joystickR",
+    {
+      title: "joystickRCanvas",
+      ...defaultOptions,
+    },
+    null!,
+  );
 };
