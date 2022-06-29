@@ -176,8 +176,8 @@ export const JoyStick = function (container, parameters, callback) {
     );
     if (moveDistance > maxMoveStick) {
       const angle = Math.atan2(movedY - centerY, movedX - centerX);
-      movedX = Math.cos(angle) * internalRadius + centerX;
-      movedY = Math.sin(angle) * internalRadius + centerY;
+      movedX = Math.cos(angle) * maxMoveStick + centerX;
+      movedY = Math.sin(angle) * maxMoveStick + centerY;
     }
 
     context.arc(movedX, movedY, internalRadius, 0, circumference, false);
