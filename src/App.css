@@ -1,15 +1,9 @@
-#root {
-  width: 100vw;
-}
-
-.App-header {
-  height: 60vh;
+.App {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
 }
 
 .w-color-wheel {
@@ -22,7 +16,6 @@
   width: 100vw;
   display: flex;
   justify-content: space-evenly;
-  flex-wrap: wrap;
 }
 
 .color {
@@ -32,27 +25,15 @@
 }
 
 .joystick-container {
-  width: 100vw;
-  height: 40vh;
+  max-width: 800px;
   display: flex;
-  justify-content: space-evenly;
+  flex-grow: 1;
+  justify-content: space-between;
 }
 
 .joystick {
+  margin-top: 1em;
   width: 200px;
   height: 200px;
-  margin: 20px;
-}
-
-@media (max-height: 500px) and (orientation: landscape) {
-  .App-header {
-    flex-direction: row;
-    height: 30vh;
-  }
-  .joystick-container {
-    height: 70vh;
-  }
-  .w-color-wheel {
-    display: none;
-  }
+  border-radius: 50%;
 }

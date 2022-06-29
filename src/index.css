@@ -12,3 +12,29 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+header {
+  height: 60vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+}
+
+footer {
+  height: 40vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  header {
+    height: 30vh;
+  }
+  footer {
+    height: 70vh;
+  }
+  .w-color-wheel {
+    display: none;
+  }
+}

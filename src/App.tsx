@@ -26,7 +26,7 @@ const defaultColor = colorScale[Math.floor(Math.random() * colorScale.length)];
 redrawJoys(defaultColor);
 
 // Send update events with joystick positions at a regular interval
-const intervalMilliseconds = 500;
+const eventThrottleMs = 50;
 setInterval(() => {
   const lx = joyL.GetX();
   const ly = joyL.GetY();
@@ -40,7 +40,7 @@ setInterval(() => {
       rx,
       ry,
     });
-}, intervalMilliseconds);
+}, eventThrottleMs);
 
 function App() {
   const [color, setColor] = useState(defaultColor);
@@ -62,30 +62,28 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <Wheel
-          width={175}
-          height={175}
-          color={hsva}
-          onChange={(newColor) =>
-            throttle(() => onHsvaChange(newColor), intervalMilliseconds)
-          }
-        />
-        <div className="color-picker">
-          {colorScale.map((value, index) => (
-            <div
-              key={index}
-              className="color"
-              tabIndex={0}
-              style={{
-                backgroundColor: value,
-                boxShadow: `0 0 15px 2px ${value}`,
-              }}
-              onClick={() => onColorChange(value)}
-            />
-          ))}
-        </div>
-      </header>
+      <Wheel
+        width={175}
+        height={175}
+        color={hsva}
+        onChange={(newColor) =>
+          throttle(() => onHsvaChange(newColor), eventThrottleMs)
+        }
+      />
+      <div className="color-picker">
+        {colorScale.map((value, index) => (
+          <div
+            key={index}
+            className="color"
+            tabIndex={0}
+            style={{
+              backgroundColor: value,
+              boxShadow: `0 0 15px 2px ${value}`,
+            }}
+            onClick={() => onColorChange(value)}
+          />
+        ))}
+      </div>
     </div>
   );
 }
