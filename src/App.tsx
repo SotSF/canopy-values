@@ -1,7 +1,7 @@
 import chroma from "chroma-js";
 import { useState } from "react";
 import Wheel from "@uiw/react-color-wheel";
-import { EventType, sendEvent } from "./modules/events";
+import { Button, EventType, sendEvent } from "./modules/events";
 import { joyL, joyR, redrawJoys } from "./modules/joystick";
 import { throttle } from "./modules/util";
 import "./App.css";
@@ -60,6 +60,12 @@ function App() {
     onColorChange(newColor.hex);
   };
 
+  const onButtonPress = (button: Button) =>
+    sendEvent({
+      event: EventType.Press,
+      button,
+    });
+
   return (
     <div className="App">
       <Wheel
@@ -70,7 +76,7 @@ function App() {
           throttle(() => onHsvaChange(newColor), eventThrottleMs)
         }
       />
-      <div className="color-picker">
+      <div className="color-container">
         {colorScale.map((value, index) => (
           <div
             key={index}
@@ -83,6 +89,16 @@ function App() {
             onClick={() => onColorChange(value)}
           />
         ))}
+      </div>
+      <div className="button-wrapper">
+        <div className="button-container">
+          <button className="button" onClick={() => onButtonPress(Button.L)}>
+            L
+          </button>
+          <button className="button" onClick={() => onButtonPress(Button.R)}>
+            R
+          </button>
+        </div>
       </div>
     </div>
   );

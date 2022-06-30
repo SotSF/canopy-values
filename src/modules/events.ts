@@ -1,7 +1,12 @@
 export const enum EventType {
   Update = 1,
   ChangeColor,
-  Fire,
+  Press,
+}
+
+export const enum Button {
+  L = 1,
+  R,
 }
 
 export type PlayerEvent =
@@ -17,7 +22,8 @@ export type PlayerEvent =
       color: string;
     }
   | {
-      event: EventType.Fire;
+      event: EventType.Press;
+      button: Button;
     };
 
 const hexStringToIntArray = (hexString: string) =>
@@ -31,8 +37,9 @@ websocket.binaryType = "arraybuffer";
 /*
   Binary format
 
-  EventType.Fire:
+  EventType.Press:
     0x00                < Event type
+    0x00                < Button id
 
   EventType.ChangeColor:
     0x00                < Event type
@@ -66,6 +73,9 @@ export const sendEvent = async (playerEvent: PlayerEvent) => {
       for (let i = 0; i < 16; i++) {
         byteBuffer[i + 1] = floatData[i];
       }
+      break;
+    case EventType.Press:
+      byteBuffer[1] = playerEvent.button;
   }
 
   websocket.send(byteBuffer.buffer);

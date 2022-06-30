@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   font-size: calc(10px + 2vmin);
 }
 
@@ -11,8 +10,9 @@
   border-radius: 50%;
 }
 
-.color-picker {
-  margin-top: 3em;
+.color-container {
+  margin-top: 2em;
+  margin-bottom: 2em;
   width: 100vw;
   display: flex;
   justify-content: space-evenly;
@@ -22,6 +22,34 @@
   width: 2em;
   height: 2em;
   border-radius: 1em;
+}
+
+.button-wrapper {
+  display: flex;
+  width: 100vw;
+  justify-content: center;
+}
+
+.button-container {
+  margin-bottom: 0;
+  max-width: 800px;
+  flex-grow: 1;
+  display: flex;
+  justify-content: space-between;
+}
+
+.button {
+  display: flex;
+  width: 100px;
+  height: 3em;
+  margin-left: 50px;
+  margin-right: 50px;
+  border-radius: 1em;
+  background-color: grey;
+  box-shadow: 0 0 16px 0 gray;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
 }
 
 .joystick-container {
