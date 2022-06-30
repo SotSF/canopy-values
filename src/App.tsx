@@ -92,10 +92,26 @@ function App() {
       </div>
       <div className="button-wrapper">
         <div className="button-container">
-          <button className="button" onClick={() => onButtonPress(Button.L)}>
+          <button
+            className="button"
+            onTouchStart={() => {
+              onButtonPress(Button.L);
+            }}
+            onClick={() =>
+              !("ontouchstart" in document.documentElement) &&
+              onButtonPress(Button.L)
+            }
+          >
             L
           </button>
-          <button className="button" onClick={() => onButtonPress(Button.R)}>
+          <button
+            className="button"
+            onTouchStart={() => onButtonPress(Button.R)}
+            onClick={() =>
+              !("ontouchstart" in document.documentElement) &&
+              onButtonPress(Button.R)
+            }
+          >
             R
           </button>
         </div>
