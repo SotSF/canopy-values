@@ -3,7 +3,8 @@ import { useState } from "react";
 import Wheel from "@uiw/react-color-wheel";
 import { Button, EventType, sendEvent } from "./modules/events";
 import { joyL, joyR, redrawJoys } from "./modules/joystick";
-import { throttle } from "./modules/util";
+import { useDeviceOrientation } from "./modules/deviceOrientation";
+import { throttle } from "lodash";
 import "./App.css";
 
 type HSVA = { h: number; s: number; v: number; a: number };
@@ -42,15 +43,32 @@ setInterval(() => {
     });
 }, eventThrottleMs);
 
-function App() {
-  const [color, setColor] = useState(defaultColor);
-  const [hsva, setHsva] = useState({ h: 0, s: 0, v: 68, a: 1 } as HSVA);
-
-  const onColorChange = (newColor: string) => {
+const sendChangeColorEvent = throttle(
+  (color: string) =>
     sendEvent({
       event: EventType.ChangeColor,
       color,
-    });
+    }),
+  500,
+);
+
+const sendButtonPressEvent = throttle(
+  (button: Button) =>
+    sendEvent({
+      event: EventType.Press,
+      button,
+    }),
+  eventThrottleMs,
+);
+
+function App() {
+  const [, setColor] = useState(defaultColor);
+  const [hsva, setHsva] = useState({ h: 0, s: 0, v: 68, a: 1 } as HSVA);
+
+  const { orientation, requestAccess, error } = useDeviceOrientation();
+
+  const onColorChange = (newColor: string) => {
+    sendChangeColorEvent(newColor);
     redrawJoys(newColor);
     setColor(newColor);
   };
@@ -60,22 +78,9 @@ function App() {
     onColorChange(newColor.hex);
   };
 
-  const onButtonPress = (button: Button) =>
-    sendEvent({
-      event: EventType.Press,
-      button,
-    });
-
   return (
     <div className="App">
-      <Wheel
-        width={175}
-        height={175}
-        color={hsva}
-        onChange={(newColor) =>
-          throttle(() => onHsvaChange(newColor), eventThrottleMs)
-        }
-      />
+      <Wheel width={175} height={175} color={hsva} onChange={onHsvaChange} />
       <div className="color-container">
         {colorScale.map((value, index) => (
           <div
@@ -95,21 +100,27 @@ function App() {
           <button
             className="button"
             onTouchStart={() => {
-              onButtonPress(Button.L);
+              sendButtonPressEvent(Button.L);
             }}
             onClick={() =>
               !("ontouchstart" in document.documentElement) &&
-              onButtonPress(Button.L)
+              sendButtonPressEvent(Button.L)
             }
           >
             L
           </button>
+          <button className="button" onClick={() => requestAccess()}>
+            Request access
+          </button>
+          <div>
+            <code>{orientation?.alpha || error?.name || "missing"}</code>
+          </div>
           <button
             className="button"
-            onTouchStart={() => onButtonPress(Button.R)}
+            onTouchStart={() => sendButtonPressEvent(Button.R)}
             onClick={() =>
               !("ontouchstart" in document.documentElement) &&
-              onButtonPress(Button.R)
+              sendButtonPressEvent(Button.R)
             }
           >
             R
