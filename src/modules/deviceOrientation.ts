@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-// import { throttle } from "lodash";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { throttle } from "lodash";
 
 type DeviceOrientation = {
   alpha: number | null;
@@ -20,16 +20,19 @@ export const useDeviceOrientation = (): UseDeviceOrientationData => {
     null,
   );
 
-  const onDeviceOrientation = (event: DeviceOrientationEvent): void =>
-    // throttle(
-    // () =>
-    setOrientation({
-      alpha: event.alpha,
-      beta: event.beta,
-      gamma: event.gamma,
-    });
-  // 500,
-  // );
+  const onDeviceOrientation = useMemo(
+    () =>
+      throttle(
+        (event: DeviceOrientationEvent): void =>
+          setOrientation({
+            alpha: event.alpha,
+            beta: event.beta,
+            gamma: event.gamma,
+          }),
+        50,
+      ),
+    [setOrientation],
+  );
 
   const revokeAccessAsync = async (): Promise<void> => {
     window.removeEventListener("deviceorientation", onDeviceOrientation);

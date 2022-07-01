@@ -40,6 +40,7 @@ Visit: http://localhost:3000/
 - do stuff with gyroscope/accelerometer data
 - size joystick smartly
 - smartly reconnect to websocket server
+- recolor joysticks without dom element removal
 
 ## Flask app
 

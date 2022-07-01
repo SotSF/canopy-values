@@ -113,7 +113,9 @@ function App() {
             Request access
           </button>
           <div>
-            <code>{orientation?.alpha || error?.name || "missing"}</code>
+            <code>
+              {orientation?.alpha?.toFixed(2) || error?.name || "missing"}
+            </code>
           </div>
           <button
             className="button"
