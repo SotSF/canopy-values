@@ -50,7 +50,6 @@ assign any overrides as desired. Re-run `npm start` to rebuild with the changed 
 
 - size joystick smartly
 - smartly reconnect to websocket server
-- recolor joysticks without dom element removal
 
 ## Flask app
 

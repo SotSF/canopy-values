@@ -3,11 +3,12 @@ import { JoyStick } from "./joy";
 interface Joy {
   GetX(): number;
   GetY(): number;
+  Recolor(color: string): void;
 }
 
 export let joyL: Joy;
 export let joyR: Joy;
-export const redrawJoys = (color: string) => {
+export const drawJoys = (color: string) => {
   document.getElementById("joystickLCanvas")?.remove();
   document.getElementById("joystickRCanvas")?.remove();
 
@@ -32,4 +33,9 @@ export const redrawJoys = (color: string) => {
     },
     null!,
   );
+};
+
+export const recolorJoys = (color: string) => {
+  joyL.Recolor(color);
+  joyR.Recolor(color);
 };

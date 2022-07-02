@@ -3,7 +3,7 @@ import { useState } from "react";
 import ReactSwitch from "react-switch";
 import Wheel from "@uiw/react-color-wheel";
 import { Button, EventType, sendEvent } from "./modules/events";
-import { joyL, joyR, redrawJoys } from "./modules/joystick";
+import { joyL, joyR, drawJoys, recolorJoys } from "./modules/joystick";
 import { useDeviceOrientation } from "./modules/deviceOrientation";
 import { throttle } from "lodash";
 import "./App.css";
@@ -25,7 +25,7 @@ const colorScale = chroma
   .colors(numberOfColors);
 
 const defaultColor = colorScale[Math.floor(Math.random() * colorScale.length)];
-redrawJoys(defaultColor);
+drawJoys(defaultColor);
 
 // Send update events with joystick positions at a regular interval
 const eventThrottleMs = 50;
@@ -71,7 +71,7 @@ function App() {
 
   const onColorChange = (newColor: string) => {
     sendChangeColorEvent(newColor);
-    redrawJoys(newColor);
+    recolorJoys(newColor);
     setColor(newColor);
   };
 
@@ -107,7 +107,13 @@ function App() {
                 value === color ? "10px" : "2px"
               } ${value}`,
             }}
-            onClick={() => onColorChange(value)}
+            // Use onTouchStart for snappy controls and to handle multitouch situations
+            onTouchStart={() => onColorChange(value)}
+            // On mobile, to avoid sending to events, ignore onClick
+            onClick={() =>
+              !("ontouchstart" in document.documentElement) &&
+              onColorChange(value)
+            }
           />
         ))}
       </div>
@@ -115,9 +121,7 @@ function App() {
         <div className="button-container">
           <button
             className="button"
-            onTouchStart={() => {
-              sendButtonPressEvent(Button.L);
-            }}
+            onTouchStart={() => sendButtonPressEvent(Button.L)}
             onClick={() =>
               !("ontouchstart" in document.documentElement) &&
               sendButtonPressEvent(Button.L)

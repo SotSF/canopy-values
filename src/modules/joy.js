@@ -415,4 +415,16 @@ export const JoyStick = function (container, parameters, callback) {
   this.GetDir = function () {
     return getCardinalDirection();
   };
+
+  this.Recolor = function (color) {
+    internalFillColor = color;
+    internalStrokeColor = color;
+    externalStrokeColor = color;
+
+    // Delete canvas
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    // Redraw object
+    drawExternal();
+    drawInternal();
+  };
 };
