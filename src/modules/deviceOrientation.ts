@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { throttle } from "lodash";
+import { EventType, sendEvent } from "./events";
 
 type DeviceOrientation = {
   alpha: number | null;
@@ -22,15 +23,15 @@ export const useDeviceOrientation = (): UseDeviceOrientationData => {
 
   const onDeviceOrientation = useMemo(
     () =>
-      throttle(
-        (event: DeviceOrientationEvent): void =>
-          setOrientation({
-            alpha: event.alpha,
-            beta: event.beta,
-            gamma: event.gamma,
-          }),
-        50,
-      ),
+      throttle((event: DeviceOrientationEvent): void => {
+        const newOrientation = {
+          alpha: event.alpha || 0,
+          beta: event.beta || 0,
+          gamma: event.gamma || 0,
+        };
+        setOrientation(newOrientation);
+        sendEvent({ event: EventType.Gyro, ...newOrientation });
+      }, 50),
     [setOrientation],
   );
 

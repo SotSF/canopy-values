@@ -67,7 +67,7 @@ function App() {
   const [hsva, setHsva] = useState({ h: 0, s: 0, v: 68, a: 1 } as HSVA);
   const [gyroMode, setGyroMode] = useState(false);
 
-  const { orientation, requestAccess, revokeAccess } = useDeviceOrientation();
+  const { requestAccess, revokeAccess } = useDeviceOrientation();
 
   const onColorChange = (newColor: string) => {
     sendChangeColorEvent(newColor);
