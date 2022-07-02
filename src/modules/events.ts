@@ -31,7 +31,8 @@ const hexStringToIntArray = (hexString: string) =>
     hexString.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)),
   );
 
-const websocket = new WebSocket("ws://127.0.0.1:9431");
+let server = "192.168.1.39";
+const websocket = new WebSocket(`ws://${server}:9431`);
 websocket.binaryType = "arraybuffer";
 
 /*

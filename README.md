@@ -40,6 +40,7 @@ Visit: http://localhost:3000/
 - size joystick smartly
 - smartly reconnect to websocket server
 - recolor joysticks without dom element removal
+- configure server address via CLI
 
 ## Flask app
 

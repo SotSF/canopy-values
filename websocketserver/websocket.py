@@ -12,7 +12,7 @@ async def handler(websocket, path):
             print("Connection closed")
             connection_open = False
 
-start_server = websockets.serve(handler, '127.0.0.1', 9431)
+start_server = websockets.serve(handler, '0.0.0.0', 9431)
 
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()
