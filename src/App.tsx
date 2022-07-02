@@ -62,7 +62,7 @@ const sendButtonPressEvent = throttle(
 );
 
 function App() {
-  const [, setColor] = useState(defaultColor);
+  const [color, setColor] = useState(defaultColor);
   const [hsva, setHsva] = useState({ h: 0, s: 0, v: 68, a: 1 } as HSVA);
 
   const { orientation, requestAccess, error } = useDeviceOrientation();
@@ -89,7 +89,9 @@ function App() {
             tabIndex={0}
             style={{
               backgroundColor: value,
-              boxShadow: `0 0 15px 2px ${value}`,
+              boxShadow: `0 0 15px ${
+                value === color ? "10px" : "2px"
+              } ${value}`,
             }}
             onClick={() => onColorChange(value)}
           />

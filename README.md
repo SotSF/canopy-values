@@ -36,7 +36,6 @@ Visit: http://localhost:3000/
 
 ## To do
 
-- animate color buttons
 - do stuff with gyroscope/accelerometer data
 - size joystick smartly
 - smartly reconnect to websocket server
