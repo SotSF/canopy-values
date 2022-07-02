@@ -71,8 +71,8 @@ export const useDeviceOrientation = (): UseDeviceOrientationData => {
     return true;
   };
 
-  const requestAccess = useCallback(requestAccessAsync, []);
-  const revokeAccess = useCallback(revokeAccessAsync, []);
+  const requestAccess = useCallback(requestAccessAsync, [onDeviceOrientation]);
+  const revokeAccess = useCallback(revokeAccessAsync, [onDeviceOrientation]);
 
   useEffect(() => {
     return (): void => {
