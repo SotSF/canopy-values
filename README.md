@@ -34,12 +34,23 @@ Either run the canopy app, or run the python websocket server:
 
 Visit: http://localhost:3000/
 
+### Tips
+
+The React app looks for a websocket server using the following environment variables:
+
+```
+REACT_APP_WEBSOCKET_HOST=127.0.0.1
+REACT_APP_WEBSOCKET_PORT=9431
+```
+
+These values get assigned default values in `.env`. To override them, create a file `.env.local` and
+assign any overrides as desired. Re-run `npm start` to rebuild with the changed values.
+
 ## To do
 
 - size joystick smartly
 - smartly reconnect to websocket server
 - recolor joysticks without dom element removal
-- configure server address via CLI
 
 ## Flask app
 

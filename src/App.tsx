@@ -50,7 +50,7 @@ const sendChangeColorEvent = throttle(
       event: EventType.ChangeColor,
       color,
     }),
-  500,
+  eventThrottleMs,
 );
 
 const sendButtonPressEvent = throttle(

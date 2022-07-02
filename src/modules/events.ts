@@ -38,8 +38,10 @@ const hexStringToIntArray = (hexString: string) =>
     hexString.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)),
   );
 
-let server = "192.168.1.39";
-const websocket = new WebSocket(`ws://${server}:9431`);
+const { REACT_APP_WEBSOCKET_HOST, REACT_APP_WEBSOCKET_PORT } = process.env;
+const websocket = new WebSocket(
+  `ws://${REACT_APP_WEBSOCKET_HOST}:${REACT_APP_WEBSOCKET_PORT}`,
+);
 websocket.binaryType = "arraybuffer";
 
 /*
