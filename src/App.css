@@ -5,6 +5,17 @@
   font-size: calc(10px + 2vmin);
 }
 
+.gyro-toggle-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1em;
+  color: silver;
+}
+
+.gyro-toggle {
+  margin-right: 1em;
+}
+
 .w-color-wheel {
   box-shadow: 0 0 16px -5px gray;
   border-radius: 50%;

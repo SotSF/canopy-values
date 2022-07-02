@@ -1,5 +1,6 @@
 import chroma from "chroma-js";
 import { useState } from "react";
+import ReactSwitch from "react-switch";
 import Wheel from "@uiw/react-color-wheel";
 import { Button, EventType, sendEvent } from "./modules/events";
 import { joyL, joyR, redrawJoys } from "./modules/joystick";
@@ -64,8 +65,9 @@ const sendButtonPressEvent = throttle(
 function App() {
   const [color, setColor] = useState(defaultColor);
   const [hsva, setHsva] = useState({ h: 0, s: 0, v: 68, a: 1 } as HSVA);
+  const [gyroMode, setGyroMode] = useState(false);
 
-  const { orientation, requestAccess, error } = useDeviceOrientation();
+  const { orientation, requestAccess, revokeAccess } = useDeviceOrientation();
 
   const onColorChange = (newColor: string) => {
     sendChangeColorEvent(newColor);
@@ -80,6 +82,18 @@ function App() {
 
   return (
     <div className="App">
+      <label className="gyro-toggle-container">
+        <ReactSwitch
+          onChange={(sensorModeEnabled) => {
+            setGyroMode(sensorModeEnabled);
+            if (sensorModeEnabled) requestAccess();
+            else revokeAccess();
+          }}
+          checked={gyroMode}
+          className="gyro-toggle"
+        />
+        <span>Gyro mode</span>
+      </label>
       <Wheel width={175} height={175} color={hsva} onChange={onHsvaChange} />
       <div className="color-container">
         {colorScale.map((value, index) => (
@@ -111,14 +125,6 @@ function App() {
           >
             L
           </button>
-          <button className="button" onClick={() => requestAccess()}>
-            Request access
-          </button>
-          <div>
-            <code>
-              {orientation?.alpha?.toFixed(2) || error?.name || "missing"}
-            </code>
-          </div>
           <button
             className="button"
             onTouchStart={() => sendButtonPressEvent(Button.R)}
