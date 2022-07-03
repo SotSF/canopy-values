@@ -2,9 +2,9 @@
 
 Web app that interfaces with the Servants of the Secret Fire LED Canopy.
 
-![Landscape](./docs/landscape.png)
+<img src="./docs/landscape.png" alt="landscape" width="400"></img>
 
-![Portrait](./docs/portrait.png)
+<img src="./docs/portrait.png" alt="portrait" width="175"></img>
 
 ## Overview
 
