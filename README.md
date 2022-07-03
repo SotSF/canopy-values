@@ -2,6 +2,10 @@
 
 Web app that interfaces with the Servants of the Secret Fire LED Canopy.
 
+![Landscape](./docs/landscape.png)
+
+![Portrait](./docs/portrait.png)
+
 ## Overview
 
 A Create React App (CRA) Typescript app renders a React frontend, which connects to the Unity app's
