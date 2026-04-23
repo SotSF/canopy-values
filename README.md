@@ -40,15 +40,15 @@ Visit: http://localhost:3000/
 
 ### Tips
 
-The React app looks for a websocket server using the following environment variables:
+The React app connects to a websocket server on the same host that served the page. The port is
+configured via an environment variable:
 
 ```
-REACT_APP_WEBSOCKET_HOST=127.0.0.1
 REACT_APP_WEBSOCKET_PORT=9431
 ```
 
-These values get assigned default values in `.env`. To override them, create a file `.env.local` and
-assign any overrides as desired. Re-run `npm start` to rebuild with the changed values.
+This value gets a default in `.env`. To override it, create a file `.env.local` and assign the
+override as desired. Re-run `npm start` to rebuild with the changed value.
 
 ## To do
 

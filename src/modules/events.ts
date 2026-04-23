@@ -38,11 +38,82 @@ const hexStringToIntArray = (hexString: string) =>
     hexString.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)),
   );
 
-const { REACT_APP_WEBSOCKET_HOST, REACT_APP_WEBSOCKET_PORT } = process.env;
-const websocket = new WebSocket(
-  `ws://${REACT_APP_WEBSOCKET_HOST}:${REACT_APP_WEBSOCKET_PORT}`,
-);
-websocket.binaryType = "arraybuffer";
+const { REACT_APP_WEBSOCKET_PORT } = process.env;
+const websocketUrl = `ws://${window.location.hostname}:${REACT_APP_WEBSOCKET_PORT}`;
+
+const MAX_RETRIES = 5;
+const BASE_DELAY_MS = 500;
+
+export type ConnectionStatus = "connected" | "disconnected";
+
+const statusListeners = new Set<(status: ConnectionStatus) => void>();
+let currentStatus: ConnectionStatus = "disconnected";
+let websocket: WebSocket;
+let retryCount = 0;
+let retryTimer: ReturnType<typeof setTimeout> | null = null;
+
+const setStatus = (status: ConnectionStatus) => {
+  if (status === currentStatus) return;
+  currentStatus = status;
+  statusListeners.forEach((listener) => listener(status));
+};
+
+const scheduleReconnect = () => {
+  if (retryTimer !== null) return;
+  if (retryCount >= MAX_RETRIES) return;
+  const delay = BASE_DELAY_MS * Math.pow(2, retryCount);
+  retryCount++;
+  retryTimer = setTimeout(() => {
+    retryTimer = null;
+    connect();
+  }, delay);
+};
+
+const connect = () => {
+  const ws = new WebSocket(websocketUrl);
+  ws.binaryType = "arraybuffer";
+  websocket = ws;
+
+  ws.addEventListener("open", () => {
+    if (ws !== websocket) return;
+    retryCount = 0;
+    setStatus("connected");
+  });
+  ws.addEventListener("close", () => {
+    if (ws !== websocket) return;
+    setStatus("disconnected");
+    scheduleReconnect();
+  });
+  ws.addEventListener("error", () => {
+    if (ws !== websocket) return;
+    setStatus("disconnected");
+  });
+};
+
+export const reconnect = () => {
+  if (retryTimer !== null) {
+    clearTimeout(retryTimer);
+    retryTimer = null;
+  }
+  retryCount = 0;
+  const oldWs = websocket;
+  connect();
+  if (oldWs && oldWs.readyState !== WebSocket.CLOSED) {
+    oldWs.close();
+  }
+};
+
+connect();
+
+export const subscribeConnectionStatus = (
+  listener: (status: ConnectionStatus) => void,
+) => {
+  statusListeners.add(listener);
+  listener(currentStatus);
+  return () => {
+    statusListeners.delete(listener);
+  };
+};
 
 /*
   Binary format
@@ -100,5 +171,7 @@ export const sendEvent = async (playerEvent: PlayerEvent) => {
       }
   }
 
-  websocket.send(byteBuffer.buffer);
+  if (websocket.readyState === WebSocket.OPEN) {
+    websocket.send(byteBuffer.buffer);
+  }
 };

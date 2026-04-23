@@ -5,6 +5,48 @@
   font-size: calc(10px + 2vmin);
 }
 
+.status-bar {
+  position: fixed;
+  top: 8px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+@media (orientation: landscape) {
+  .status-bar {
+    flex-direction: column;
+  }
+}
+
+.status-button {
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  color: silver;
+  display: flex;
+  align-items: center;
+}
+
+.status-icon {
+  display: block;
+  transition: color 200ms, opacity 200ms;
+}
+
+.status-icon.connected {
+  color: #4ade80;
+  opacity: 1;
+}
+
+.status-icon.disconnected {
+  color: silver;
+  opacity: 0.4;
+}
+
 .gyro-toggle-container {
   display: flex;
   align-items: center;
