@@ -3,6 +3,8 @@ export const enum EventType {
   ChangeColor,
   Press,
   Gyro,
+  Rotate,
+  CalibrationStatus,
 }
 
 export const enum Button {
@@ -31,6 +33,14 @@ export type PlayerEvent =
       alpha: number;
       beta: number;
       gamma: number;
+    }
+  | {
+      event: EventType.Rotate;
+      angle: number;
+    }
+  | {
+      event: EventType.CalibrationStatus;
+      calibrated: boolean;
     };
 
 const hexStringToIntArray = (hexString: string) =>
@@ -138,6 +148,14 @@ export const subscribeConnectionStatus = (
     0x00 0x00 0x00 0x00 < float data 0 (alpha)
     0x00 0x00 0x00 0x00 < float data 1 (beta)
     0x00 0x00 0x00 0x00 < float data 2 (gamma)
+
+  EventType.Rotate:
+    0x00                < Event type
+    0x00 0x00 0x00 0x00 < float data 0 (angle increment in radians)
+
+  EventType.CalibrationStatus:
+    0x00                < Event type
+    0x00                < calibration done flag (0 = calibrating, 1 = done)
 */
 export const sendEvent = async (playerEvent: PlayerEvent) => {
   const byteBuffer = new Uint8Array(17);
@@ -169,6 +187,15 @@ export const sendEvent = async (playerEvent: PlayerEvent) => {
       for (let i = 0; i < 12; i++) {
         byteBuffer[i + 1] = floatData[i];
       }
+      break;
+    case EventType.Rotate:
+      floatData = new Uint8Array(new Float32Array([playerEvent.angle]).buffer);
+      for (let i = 0; i < 4; i++) {
+        byteBuffer[i + 1] = floatData[i];
+      }
+      break;
+    case EventType.CalibrationStatus:
+      byteBuffer[1] = playerEvent.calibrated ? 1 : 0;
   }
 
   if (websocket.readyState === WebSocket.OPEN) {

@@ -75,7 +75,14 @@
   width: 2em;
   height: 2em;
   border-radius: 1em;
-  transition: all 50ms;
+  transition: outline-color 100ms;
+  outline: 3px solid transparent;
+  outline-offset: 3px;
+  cursor: pointer;
+}
+
+.color.selected {
+  outline-color: #e5e5e5;
 }
 
 .button-wrapper {
@@ -118,4 +125,35 @@
   width: 200px;
   height: 200px;
   border-radius: 50%;
+}
+
+body.calibrating .joystick-container {
+  display: none;
+}
+
+.calibration-container {
+  display: flex;
+  width: 100vw;
+  max-width: 800px;
+  justify-content: space-evenly;
+  margin-top: 1em;
+}
+
+.calibration-button {
+  width: 4em;
+  height: 4em;
+  border-radius: 50%;
+  background-color: grey;
+  box-shadow: 0 0 16px 0 gray;
+  border: none;
+  font-size: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.calibration-done {
+  color: #4ade80;
+  font-weight: bold;
 }

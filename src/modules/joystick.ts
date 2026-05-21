@@ -6,8 +6,8 @@ interface Joy {
   Recolor(color: string): void;
 }
 
-export let joyL: Joy;
-export let joyR: Joy;
+export let joyL: Joy | undefined;
+export let joyR: Joy | undefined;
 export const drawJoys = (color: string) => {
   document.getElementById("joystickLCanvas")?.remove();
   document.getElementById("joystickRCanvas")?.remove();
@@ -36,6 +36,6 @@ export const drawJoys = (color: string) => {
 };
 
 export const recolorJoys = (color: string) => {
-  joyL.Recolor(color);
-  joyR.Recolor(color);
+  joyL?.Recolor(color);
+  joyR?.Recolor(color);
 };

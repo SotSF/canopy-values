@@ -1,5 +1,5 @@
 import chroma from "chroma-js";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ReactSwitch from "react-switch";
 import Wheel from "@uiw/react-color-wheel";
 import {
@@ -31,25 +31,15 @@ const colorScale = chroma
   .mode("hcl")
   .colors(numberOfColors);
 
-const defaultColor = colorScale[Math.floor(Math.random() * colorScale.length)];
-drawJoys(defaultColor);
+const defaultColorIndex = Math.floor(Math.random() * colorScale.length);
+const defaultColor = colorScale[defaultColorIndex];
+const initialHsva: HSVA = { h: 0, s: 0, v: 68, a: 1 };
+const initialCustomColor = chroma
+  .hsv(initialHsva.h, initialHsva.s / 100, initialHsva.v / 100)
+  .hex();
 
-// Send update events with joystick positions at a regular interval
 const eventThrottleMs = 50;
-setInterval(() => {
-  const lx = joyL.GetX();
-  const ly = joyL.GetY();
-  const rx = joyR.GetX();
-  const ry = joyR.GetY();
-  if ([lx, ly, rx, ry].some((n) => n > 0.00001 || n < -0.00001))
-    sendEvent({
-      event: EventType.Update,
-      lx,
-      ly,
-      rx,
-      ry,
-    });
-}, eventThrottleMs);
+const rotationIncrementRad = Math.PI / 6; // 30 degrees
 
 const sendChangeColorEvent = throttle(
   (color: string) =>
@@ -68,6 +58,18 @@ const sendButtonPressEvent = throttle(
     }),
   eventThrottleMs,
 );
+
+const sendRotateEvent = (angle: number) =>
+  sendEvent({
+    event: EventType.Rotate,
+    angle,
+  });
+
+const sendCalibrationStatusEvent = (calibrated: boolean) =>
+  sendEvent({
+    event: EventType.CalibrationStatus,
+    calibrated,
+  });
 
 const WifiIcon = ({ connected }: { connected: boolean }) => (
   <svg
@@ -161,8 +163,16 @@ const useAutoFullscreenOnTouch = (supported: boolean) => {
 
 function App() {
   const [color, setColor] = useState(defaultColor);
-  const [hsva, setHsva] = useState({ h: 0, s: 0, v: 68, a: 1 } as HSVA);
+  const [hsva, setHsva] = useState<HSVA>(initialHsva);
+  const [customColor, setCustomColor] = useState(initialCustomColor);
+  const [selection, setSelection] = useState<number | "custom">(
+    defaultColorIndex,
+  );
   const [gyroMode, setGyroMode] = useState(false);
+  const [calibrated, setCalibrated] = useState(false);
+  const rotationRef = useRef(0);
+  const colorRef = useRef(color);
+  colorRef.current = color;
   const connectionStatus = useConnectionStatus();
   const { isFullscreen, toggle: toggleFullscreen, supported: fullscreenSupported } =
     useFullscreen();
@@ -170,15 +180,75 @@ function App() {
 
   const { requestAccess, revokeAccess } = useDeviceOrientation();
 
+  useEffect(() => {
+    const id = setInterval(() => {
+      const l = joyL;
+      const r = joyR;
+      if (!l || !r) return;
+      const lx = l.GetX();
+      const ly = l.GetY();
+      const rx = r.GetX();
+      const ry = r.GetY();
+      if (![lx, ly, rx, ry].some((n) => n > 0.00001 || n < -0.00001)) return;
+      const cos = Math.cos(rotationRef.current);
+      const sin = Math.sin(rotationRef.current);
+      sendEvent({
+        event: EventType.Update,
+        lx: lx * cos - ly * sin,
+        ly: lx * sin + ly * cos,
+        rx: rx * cos - ry * sin,
+        ry: rx * sin + ry * cos,
+      });
+    }, eventThrottleMs);
+    return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    document.body.classList.toggle("calibrating", !calibrated);
+    // Draw joysticks only after their container is visible. Reading
+    // clientWidth in the JoyStick constructor returns 0 for a display:none
+    // container, which produces a negative internalRadius and corrupts the
+    // instance permanently.
+    if (calibrated) drawJoys(colorRef.current);
+    return () => document.body.classList.remove("calibrating");
+  }, [calibrated]);
+
+  useEffect(() => {
+    if (connectionStatus !== "connected") return;
+    sendCalibrationStatusEvent(calibrated);
+  }, [connectionStatus, calibrated]);
+
+  useEffect(() => {
+    if (connectionStatus !== "connected") return;
+    sendChangeColorEvent(colorRef.current);
+  }, [connectionStatus]);
+
   const onColorChange = (newColor: string) => {
     sendChangeColorEvent(newColor);
     recolorJoys(newColor);
     setColor(newColor);
   };
 
+  const onPresetSelect = (value: string, index: number) => {
+    setSelection(index);
+    onColorChange(value);
+  };
+
+  const onCustomSelect = () => {
+    setSelection("custom");
+    onColorChange(customColor);
+  };
+
   const onHsvaChange = (newColor: { hex: string; hsva: HSVA }) => {
     setHsva({ ...hsva, ...newColor.hsva });
+    setCustomColor(newColor.hex);
+    setSelection("custom");
     onColorChange(newColor.hex);
+  };
+
+  const onRotate = () => {
+    rotationRef.current += rotationIncrementRad;
+    sendRotateEvent(rotationIncrementRad);
   };
 
   return (
@@ -206,65 +276,101 @@ function App() {
           </button>
         )}
       </div>
-      <label className="gyro-toggle-container">
-        <ReactSwitch
-          onChange={(sensorModeEnabled) => {
-            setGyroMode(sensorModeEnabled);
-            if (sensorModeEnabled) requestAccess();
-            else revokeAccess();
-          }}
-          checked={gyroMode}
-          className="gyro-toggle"
-        />
-        <span>Gyro mode</span>
-      </label>
+      {calibrated && (
+        <label className="gyro-toggle-container">
+          <ReactSwitch
+            onChange={(sensorModeEnabled) => {
+              setGyroMode(sensorModeEnabled);
+              if (sensorModeEnabled) requestAccess();
+              else revokeAccess();
+            }}
+            checked={gyroMode}
+            className="gyro-toggle"
+          />
+          <span>Gyro mode</span>
+        </label>
+      )}
       <Wheel width={175} height={175} color={hsva} onChange={onHsvaChange} />
       <div className="color-container">
         {colorScale.map((value, index) => (
           <div
             key={index}
-            className="color"
+            className={`color ${selection === index ? "selected" : ""}`}
             tabIndex={0}
             style={{
               backgroundColor: value,
-              boxShadow: `0 0 15px ${
-                value === color ? "10px" : "2px"
-              } ${value}`,
+              boxShadow: `0 0 15px 2px ${value}`,
             }}
             // Use onTouchStart for snappy controls and to handle multitouch situations
-            onTouchStart={() => onColorChange(value)}
+            onTouchStart={() => onPresetSelect(value, index)}
             // On mobile, to avoid sending to events, ignore onClick
             onClick={() =>
               !("ontouchstart" in document.documentElement) &&
-              onColorChange(value)
+              onPresetSelect(value, index)
             }
           />
         ))}
+        <div
+          className={`color ${selection === "custom" ? "selected" : ""}`}
+          tabIndex={0}
+          style={{
+            backgroundColor: customColor,
+            boxShadow: `0 0 15px 2px ${customColor}`,
+          }}
+          onTouchStart={onCustomSelect}
+          onClick={() =>
+            !("ontouchstart" in document.documentElement) && onCustomSelect()
+          }
+        />
       </div>
-      <div className="button-wrapper">
-        <div className="button-container">
+      {!calibrated ? (
+        <div className="calibration-container">
           <button
-            className="button"
-            onTouchStart={() => sendButtonPressEvent(Button.L)}
+            type="button"
+            className="calibration-button"
+            onTouchStart={onRotate}
             onClick={() =>
-              !("ontouchstart" in document.documentElement) &&
-              sendButtonPressEvent(Button.L)
+              !("ontouchstart" in document.documentElement) && onRotate()
             }
+            aria-label="Rotate starting position"
           >
-            L
+            🔄️
           </button>
           <button
-            className="button"
-            onTouchStart={() => sendButtonPressEvent(Button.R)}
-            onClick={() =>
-              !("ontouchstart" in document.documentElement) &&
-              sendButtonPressEvent(Button.R)
-            }
+            type="button"
+            className="calibration-button calibration-done"
+            onClick={() => setCalibrated(true)}
+            aria-label="Done calibrating"
           >
-            R
+            ✓
           </button>
         </div>
-      </div>
+      ) : (
+        <div className="button-wrapper">
+          <div className="button-container">
+            <button
+              className="button"
+              onTouchStart={() => sendButtonPressEvent(Button.L)}
+              onClick={() =>
+                !("ontouchstart" in document.documentElement) &&
+                sendButtonPressEvent(Button.L)
+              }
+            >
+              L
+            </button>
+            <button
+              className="button"
+              onTouchStart={() => sendButtonPressEvent(Button.R)}
+              onClick={() =>
+                !("ontouchstart" in document.documentElement) &&
+                sendButtonPressEvent(Button.R)
+              }
+            >
+              R
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
